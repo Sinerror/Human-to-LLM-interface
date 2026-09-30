@@ -10,8 +10,10 @@ the prototype of section 4 of the paper.
 
 ## Open it
 
-Download a baked page, for example `gemma-3-1b-it.html` or `all_models.html`, and open it by
-double-clicking. No server and no install: the page carries its data inside it.
+**Live:** <https://sinerror.github.io/Human-to-LLM-interface/> — all nine models Baked.
+
+**Offline:** bake a page (below) and open it by double-clicking. No server: the
+page carries its data inside it.
 
 ## What the page shows
 
@@ -90,6 +92,13 @@ To build an atlas for another model, from the reproduction pipeline:
 python make_atlas.py --model <hf-id> --vecs <model>_vecs.npz --labels labels.csv \
     --probes canonical_probes.json --layer <L> --c-star <c*> --ekman ekman.json --out atlas.json
 ```
+
+## Related
+
+- [Verify](https://github.com/Sinerror/Human-to-LLM-interface-verify) — every
+  number in the paper, recomputed on a laptop.
+- [Reproduce](https://github.com/Sinerror/Human-to-LLM-interface-reproduce) — the
+  full pipeline, from prompts to atlases.
 
 ## Licence
 

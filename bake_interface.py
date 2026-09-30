@@ -9,6 +9,10 @@ bake_interface.py — inline an atlas into the page, producing one file.
   python bake_interface.py --template index.html \
       --atlas atlas_gemma-3-1b-it.json atlas_phi-2.json --out interface.html
 
+  # every atlas in a folder; the pattern is expanded here, so it also works
+  # in Windows cmd, which does not expand wildcards itself
+  python bake_interface.py --template index.html --atlas "atlases/*.json" --out all_models.html
+
 WHY BAKE
 
   The page fetches its atlas by default, which needs a web server: opening the
@@ -27,7 +31,7 @@ MULTIPLE MODELS
   poorly conditioned one in another, which is the paper's cross-model finding
   made visible rather than tabulated.
 """
-import argparse, json, os
+import argparse, glob, json, os
 
 
 def main():
@@ -38,12 +42,21 @@ def main():
     a = ap.parse_args()
 
     html = open(a.template, encoding="utf-8").read()
+    paths = []
+    for p in a.atlas:                       # expand patterns ourselves: cmd does not
+        hits = sorted(glob.glob(p)) if any(c in p for c in "*?[") else [p]
+        if not hits:
+            raise SystemExit(f"no atlas matches {p}")
+        paths += [h for h in hits if h not in paths]
     atlases = []
-    for p in a.atlas:
+    for p in paths:
         d = json.load(open(p, encoding="utf-8"))
         atlases.append(d)
         print(f"  {os.path.basename(p):<40}{d['model']:<28}"
               f"{len(d['tokens']):>7} tokens  c*={d['c_star']}")
+
+    # the page opens on the first atlas: put the paper's primary model first
+    atlases.sort(key=lambda d: d.get("model") != "google/gemma-3-1b-it")
 
     if len(atlases) == 1:
         blob = f"const ATLAS = {json.dumps(atlases[0], separators=(',', ':'))};"
